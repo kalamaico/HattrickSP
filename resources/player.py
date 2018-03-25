@@ -3,7 +3,8 @@
 from resources.random_generator import *
 
 class Player:
-    def __init__(self, name, age, days, nationality, keeper, defending, playmaking, winger, scoring, passing, setpieces, stamina, experience, charisma, loyalty, motherclub, character, moral):
+    def __init__(self, pid, name, age, days, nationality, keeper, defending, playmaking, winger, scoring, passing, setpieces, stamina, experience, charisma, loyalty, motherclub, character, moral, form):
+        self._id = pid
         self._name = name
         self._age = age
         self._days = days
@@ -28,9 +29,11 @@ class Player:
         self._injury = 0
         self._character = character
         self._moral = moral
+        self._form = form
 
         
     def to_string(self):
+        print "id: " + str(self._id)
         print "Name: " + self._name
         print "Nationality: " + str(self._nationality)
         print "Age: " + str(self._age) + "." + str(self._days)
@@ -50,7 +53,12 @@ class Player:
         print "Injury: " + str(self._injury)
         print "Character: " + str(self._character)
         print "Moral: " + str(self._moral)
-
+        print "Form: " + str(self._form)
+        
+        
+#############################
+# Player generation methods #
+#############################
         
     @classmethod
     def compute_wage(cls):
@@ -157,31 +165,72 @@ class Player:
             max_v = 7 + 2*level
             
         return rng.generate_uniform(1, max_v)
+        
+    @classmethod
+    def generate_form(cls, rng):
+        return rng.generate_uniform(1, 8)
     
-    # (self, name, age, days, nationality, keeper, defending, playmaking, winger, scoring, passing, setpieces, stamina, experience, charisma, loyalty, motherclub, character, moral):  
     
     @classmethod
     def generate_basics(cls, nationality, rng, level):
         name = Player.generate_name(nationality)
+        pid = 0 # TODO, generate a unique id
         (age, days) = Player.generate_age(rng, level)
         loyalty = Player.generate_loyalty(rng)
+        form = Player.generate_form(rng)
         
-        return (name, age, days, loyalty)
+        return (pid, name, age, days, loyalty, form)
     
     # Generate with fixed values
     @classmethod
     def generate_keeper(cls, rng, nationality, level):
-        (name, age, days, loyalty) = Player.generate_basics(nationality, rng, level)
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
         
-        return Player(name, age, days, nationality, Player.generate_main_skill(rng, level), Player.generate_secondary_skill(rng, level), 1, 1, 1, 1, Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng))
+        return Player(pid, name, age, days, nationality, Player.generate_main_skill(rng, level), Player.generate_secondary_skill(rng, level), 1, 1, 1, 1, Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)
         
     @classmethod
     def generate_central_defender(cls, rng, nationality, level):
-        (name, age, days, loyalty) = Player.generate_basics(nationality, rng, level)
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
         
-        return Player(name, age, days, nationality, 1, Player.generate_main_skill(rng, level), Player.generate_secondary_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng))  
+        return Player(pid, name, age, days, nationality, 1, Player.generate_main_skill(rng, level), Player.generate_secondary_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)  
         
-    # wingback, central midfielder, midfielder TW, winger, central forward, 3/4
+    @classmethod
+    def generate_wingback(cls, rng, nationality, level):
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
+        
+        return Player(pid, name, age, days, nationality, 1, Player.generate_main_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_non_important_skill(rng), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)
+        
+    @classmethod
+    def generate_central_midfielder(cls, rng, nationality, level):
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
+        
+        return Player(pid, name, age, days, nationality, 1, Player.generate_secondary_skill(rng, level), Player.generate_main_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)
+        
+    @classmethod
+    def generate_midfielder_tw(cls, rng, nationality, level):
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
+        
+        return Player(pid, name, age, days, nationality, 1, Player.generate_secondary_skill(rng, level), Player.generate_main_skill(rng, level), Player.generate_secondary_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_non_important_skill(rng), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)
+        
+    @classmethod
+    def generate_winger(cls, rng, nationality, level):
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
+        
+        return Player(pid, name, age, days, nationality, 1, Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_main_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)
+        
+    @classmethod
+    def generate_central_forward(cls, rng, nationality, level):
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
+        
+        return Player(pid, name, age, days, nationality, 1, Player.generate_non_important_skill(rng), Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_main_skill(rng, level), Player.generate_secondary_skill(rng, level), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)
+        
+    @classmethod
+    def generate_defensive_forward(cls, rng, nationality, level):
+        (pid, name, age, days, loyalty, form) = Player.generate_basics(nationality, rng, level)
+        
+        return Player(pid, name, age, days, nationality, 1, Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_non_important_skill(rng), Player.generate_secondary_skill(rng, level), Player.generate_main_skill(rng, level), Player.generate_setpieces(rng, age, level), Player.generate_stamina(rng, age, level), Player.generate_experience(rng, age), Player.generate_charisma(rng), loyalty, Player.generate_motherclub(rng, loyalty), Player.generate_character_and_moral(rng), Player.generate_character_and_moral(rng), form)        
+        
+# (self, id, name, age, days, nationality, keeper, defending, playmaking, winger, scoring, passing, setpieces, stamina, experience, charisma, loyalty, motherclub, character, moral):        
     
     # generate a starting team
     
